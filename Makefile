@@ -1,5 +1,8 @@
 run:
-	go run bin/modb.go
+	go run cmd/modb/modb.go
 
 build:
-	go build bin/modb.go
+	go build cmd/modb/modb.go
+
+clean:
+	rm modb
