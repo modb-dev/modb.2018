@@ -1,2 +1,4 @@
+github.com/coreos/bbolt v1.3.0 h1:HIgH5xUWXT914HCI671AxuTTqjj64UOFr7pHn48LUTI=
+github.com/coreos/bbolt v1.3.0/go.mod h1:iRUV2dpdMOn7Bo10OQBFzIJO9kkE559Wcmn+qkEiiKk=
 github.com/tidwall/redcon v0.0.0-20180228152342-56b016127ae7 h1:RRcRlh+bgnUb49YDdMJMvRY6h5RLzERpTvFrPcFF9yA=
 github.com/tidwall/redcon v0.0.0-20180228152342-56b016127ae7/go.mod h1:bdYBm4rlcWpst2XMwKVzWDF9CoUxEbUmM7CQrKeOZas=

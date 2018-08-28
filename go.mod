@@ -1,3 +1,6 @@
 module gitlab.com/chilts/modb
 
-require github.com/tidwall/redcon v0.0.0-20180228152342-56b016127ae7 // indirect
+require (
+	github.com/coreos/bbolt v1.3.0 // indirect
+	github.com/tidwall/redcon v0.0.0-20180228152342-56b016127ae7
+)
