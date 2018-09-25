@@ -1,22 +1,59 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"log"
+	"os"
 	"strings"
 	"sync"
 
 	"github.com/tidwall/redcon"
 )
 
-var addr = ":6380"
-
 func main() {
+	// store
+	var store string
+	flag.StringVar(&store, "store", "store", "specify path to use for datastore")
+
+	// clientHost
+	var clientHost string
+	flag.StringVar(&clientHost, "client-host", "", "host to listen on for clients")
+
+	// clientPort
+	var clientPort string
+	flag.StringVar(&clientPort, "client-port", "6380", "port to listen on for clients")
+
+	flag.Parse()
+
+	// clientAddr
+	clientAddr := clientHost + ":" + clientPort
+
+	// flags
+	flag.Usage = func() {
+		fmt.Printf("Usage of %s:\n", os.Args[0])
+		fmt.Printf("\n\n")
+		flag.PrintDefaults()
+	}
+
+	log.Printf("MoDB node starting:\n")
+	log.Printf("\n")
+	log.Printf("store          : %s\n", store)
+	log.Printf("client-host    : %s\n", clientHost)
+	log.Printf("client-port    : %s\n", clientPort)
+	log.Printf("client-address : %s\n", clientAddr)
+	log.Printf("\n")
+
 	var mu sync.RWMutex
 	var items = make(map[string][]byte)
-	go log.Printf("started server at %s", addr)
-	err := redcon.ListenAndServe(addr,
+
+	log.Printf("Starting server at %s", clientAddr)
+
+	// the main (client) server
+	err := redcon.ListenAndServe(clientAddr,
 		func(conn redcon.Conn, cmd redcon.Command) {
 			log.Printf("cmd: %s\n", cmd.Args)
+
 			switch strings.ToLower(string(cmd.Args[0])) {
 			default:
 				conn.WriteError("ERR unknown command '" + string(cmd.Args[0]) + "'")
@@ -76,4 +113,5 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Print("Finished")
 }
