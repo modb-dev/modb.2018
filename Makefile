@@ -4,5 +4,8 @@ run:
 build:
 	go build cmd/modb/modb.go
 
+client:
+	redis-cli -p 6380
+
 clean:
 	rm modb
