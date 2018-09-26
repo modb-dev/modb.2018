@@ -82,6 +82,14 @@ func main() {
 				items[string(cmd.Args[1])] = cmd.Args[2]
 				mu.Unlock()
 				conn.WriteString("OK")
+			case "keys":
+				mu.RLock()
+				conn.WriteArray(len(items))
+				for k := range items {
+					// keys[i] = string(k)
+					conn.WriteBulkString(k)
+				}
+				mu.RUnlock()
 			case "get":
 				if len(cmd.Args) != 2 {
 					conn.WriteError("ERR wrong number of arguments for '" + string(cmd.Args[0]) + "' command")
