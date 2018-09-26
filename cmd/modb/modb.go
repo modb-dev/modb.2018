@@ -7,16 +7,17 @@ import (
 	"os"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/tidwall/redcon"
-	bolt "go.etcd.io/bbolt"
+
+	// https://github.com/golang/go/issues/26645#issuecomment-408572701
+	store "gitlab.com/chilts/modb/store/bolt"
 )
 
 func main() {
-	// store
-	var store string
-	flag.StringVar(&store, "store", "store", "specify path to use for datastore")
+	// path/store
+	var storePath string
+	flag.StringVar(&storePath, "store", "store", "specify path to use for datastore")
 
 	// clientHost
 	var clientHost string
@@ -40,7 +41,7 @@ func main() {
 
 	log.Printf("MoDB node starting:\n")
 	log.Printf("\n")
-	log.Printf("store          : %s\n", store)
+	log.Printf("store          : %s\n", storePath)
 	log.Printf("client-host    : %s\n", clientHost)
 	log.Printf("client-port    : %s\n", clientPort)
 	log.Printf("client-address : %s\n", clientAddr)
@@ -48,11 +49,8 @@ func main() {
 
 	var err error
 
-	// opening datastore
-	db, err := bolt.Open(store, 0600, &bolt.Options{Timeout: 1 * time.Second})
-	if err != nil {
-		log.Fatal("Error opening BoltDB: ", err)
-	}
+	// create ClientService
+	db, err := store.Open(storePath)
 	defer db.Close()
 
 	var mu sync.RWMutex
