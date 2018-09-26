@@ -7,8 +7,10 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/tidwall/redcon"
+	bolt "go.etcd.io/bbolt"
 )
 
 func main() {
@@ -44,13 +46,22 @@ func main() {
 	log.Printf("client-address : %s\n", clientAddr)
 	log.Printf("\n")
 
+	var err error
+
+	// opening datastore
+	db, err := bolt.Open(store, 0600, &bolt.Options{Timeout: 1 * time.Second})
+	if err != nil {
+		log.Fatal("Error opening BoltDB: ", err)
+	}
+	defer db.Close()
+
 	var mu sync.RWMutex
 	var items = make(map[string][]byte)
 
 	log.Printf("Starting server at %s", clientAddr)
 
 	// the main (client) server
-	err := redcon.ListenAndServe(clientAddr,
+	err = redcon.ListenAndServe(clientAddr,
 		func(conn redcon.Conn, cmd redcon.Command) {
 			log.Printf("cmd: %s\n", cmd.Args)
 

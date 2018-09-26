@@ -1,5 +1,5 @@
 run:
-	go run cmd/modb/modb.go
+	go run cmd/modb/modb.go --store=mo.db
 
 help:
 	go run cmd/modb/modb.go --help
