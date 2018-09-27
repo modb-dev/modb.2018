@@ -1,8 +1,16 @@
-run:
-	go run cmd/modb/modb.go --store=mo.db
+# GO111MODULE := on
+
+empty:
+	go run cmd/modb/*.go
 
 help:
-	go run cmd/modb/modb.go --help
+	go run cmd/modb/*.go --help
+
+start:
+	go run cmd/modb/*.go start --store=mo.db
+
+start-help:
+	go run cmd/modb/*.go start --help
 
 build:
 	go build cmd/modb/modb.go

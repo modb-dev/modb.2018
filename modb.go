@@ -1,9 +1,10 @@
 package modb
 
 import (
-	"fmt"
 	"math/rand"
 	"time"
+
+	"github.com/chilts/sid"
 )
 
 func init() {
@@ -13,10 +14,7 @@ func init() {
 func NewItem(key, action, data string) Item {
 	// ToDo: validation
 
-	// Create an ID such as "14ee8f778fc450bc-4d65822107fcfd52"
-	t := time.Now()
-	r := rand.Uint64()
-	id := fmt.Sprintf("%x", t.UnixNano()) + "-" + fmt.Sprintf("%x", r)
+	id := sid.Id()
 
 	return Item{
 		ID:     id,
@@ -40,7 +38,10 @@ func (i *Item) Time() time.Time {
 
 // ClientService is the interface that all client stores must implement.
 type ClientService interface {
-	Set(Item) error
+	Set(key, json string) error
+	Inc(key, field string) error
+	Get(key string) (string, error)
+	Keys() ([]string, error)
 	Close() error
 }
 
