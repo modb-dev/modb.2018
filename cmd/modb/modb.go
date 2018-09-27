@@ -8,6 +8,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/chilts/sid"
 	"github.com/tidwall/redcon"
 
 	// https://github.com/golang/go/issues/26645#issuecomment-408572701
@@ -66,6 +67,8 @@ func main() {
 			switch strings.ToLower(string(cmd.Args[0])) {
 			default:
 				conn.WriteError("ERR unknown command '" + string(cmd.Args[0]) + "'")
+			case "id":
+				conn.WriteString(sid.Id())
 			case "ping":
 				conn.WriteString("PONG")
 			case "quit":

@@ -1,3 +1,5 @@
+github.com/chilts/sid v0.0.0-20180927000856-76cee361c7a9 h1:NF1uUiL4nRQbu1mjFll7H1Hp3WcL2e+gvbdXjA4+Stc=
+github.com/chilts/sid v0.0.0-20180927000856-76cee361c7a9/go.mod h1:kxfWM/bJqzYYYVVaPjV3BwVhmczj6UN60b4qD5BobDI=
 github.com/tidwall/redcon v0.0.0-20180228152342-56b016127ae7 h1:RRcRlh+bgnUb49YDdMJMvRY6h5RLzERpTvFrPcFF9yA=
 github.com/tidwall/redcon v0.0.0-20180228152342-56b016127ae7/go.mod h1:bdYBm4rlcWpst2XMwKVzWDF9CoUxEbUmM7CQrKeOZas=
 go.etcd.io/bbolt v1.3.0 h1:oY10fI923Q5pVCVt1GBTZMn8LHo5M+RCInFpeMnV4QI=
