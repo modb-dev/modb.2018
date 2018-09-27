@@ -12,7 +12,7 @@ import (
 	"github.com/tidwall/redcon"
 
 	// https://github.com/golang/go/issues/26645#issuecomment-408572701
-	store "github.com/chilts/modb/store/bolt"
+	bbolt "github.com/chilts/modb/store/bbolt"
 )
 
 func CmdHelp() error {
@@ -104,7 +104,7 @@ func CmdStart() error {
 	log.Printf("\n")
 
 	// create ClientService
-	db, err := store.Open(storePath)
+	db, err := bbolt.Open(storePath)
 	if err != nil {
 		fmt.Printf("Error opening path: %s\n", err.Error())
 		return err

@@ -6,7 +6,7 @@ import (
 	modb "github.com/chilts/modb"
 	"github.com/chilts/sid"
 	"github.com/tidwall/sjson"
-	bolt "go.etcd.io/bbolt"
+	bbolt "go.etcd.io/bbolt"
 )
 
 var logBucketName = []byte("log")
@@ -15,14 +15,14 @@ var itemBucketName = []byte("item")
 func Open(dirname string) (modb.ClientService, error) {
 	var err error
 
-	db, err := bolt.Open(dirname, 0666, nil)
+	db, err := bbolt.Open(dirname, 0666, nil)
 	if err != nil {
 		return nil, err
 	}
 
 	// db.tx.Bucket(logBucketName)
 
-	err = db.Update(func(tx *bolt.Tx) error {
+	err = db.Update(func(tx *bbolt.Tx) error {
 		var err error
 
 		_, err = tx.CreateBucketIfNotExists(logBucketName)
@@ -44,13 +44,13 @@ func Open(dirname string) (modb.ClientService, error) {
 	return &blt{db}, nil
 }
 
-type blt struct{ db *bolt.DB }
+type blt struct{ db *bbolt.DB }
 
 // Returns all of the keys in the current `itemBucketName`.
 func (b *blt) Keys() ([]string, error) {
 	keys := make([]string, 0)
 
-	err := b.db.View(func(tx *bolt.Tx) error {
+	err := b.db.View(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket(itemBucketName)
 		cursor := bucket.Cursor()
 
@@ -70,7 +70,7 @@ func (b *blt) Set(name, json string) error {
 	fmt.Printf("key=%s\n", key)
 	fmt.Printf("val=%s\n", val)
 
-	return b.db.Update(func(tx *bolt.Tx) error {
+	return b.db.Update(func(tx *bbolt.Tx) error {
 		log := tx.Bucket(logBucketName)
 		return log.Put([]byte(key), []byte(val))
 	})
@@ -86,7 +86,7 @@ func (b *blt) Inc(name, field string) error {
 	key := sid.Id() + ":" + name
 	val := "inc:" + json
 
-	return b.db.Update(func(tx *bolt.Tx) error {
+	return b.db.Update(func(tx *bbolt.Tx) error {
 		b := tx.Bucket(logBucketName)
 		return b.Put([]byte(key), []byte(val))
 	})
@@ -95,7 +95,7 @@ func (b *blt) Inc(name, field string) error {
 // Always returns valid JSON for the key, even if the key doesn't exist. ie. an empty key would be returned as '{}'.
 func (b *blt) Get(key string) (string, error) {
 	var v string
-	err := b.db.View(func(tx *bolt.Tx) error {
+	err := b.db.View(func(tx *bbolt.Tx) error {
 		v = string(tx.Bucket(itemBucketName).Get([]byte(key)))
 		return nil
 	})
