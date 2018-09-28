@@ -11,7 +11,7 @@ import (
 
 type store struct{ db *badger.DB }
 
-func Open(dirname string) (modb.ClientService, error) {
+func Open(dirname string) (modb.ServerService, error) {
 	opts := badger.DefaultOptions
 	opts.Dir = dirname
 	opts.ValueDir = dirname
@@ -45,8 +45,8 @@ func (s *store) Keys() ([]string, error) {
 }
 
 func (s *store) Set(name, json string) error {
-	key := "_log:" + sid.Id() + ":" + name
-	val := "set:" + json
+	key := "_log:" + sid.Id()
+	val := name + ":set:" + json
 
 	return s.db.Update(func(txn *badger.Txn) error {
 		return txn.Set([]byte(key), []byte(val))
@@ -59,8 +59,8 @@ func (s *store) Inc(name, field string) error {
 		return err
 	}
 
-	key := "_log:" + sid.Id() + ":" + name
-	val := "inc:" + json
+	key := "_log:" + sid.Id()
+	val := name + ":inc:" + json
 
 	return s.db.Update(func(txn *badger.Txn) error {
 		return txn.Set([]byte(key), []byte(val))

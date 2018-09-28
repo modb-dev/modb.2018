@@ -36,8 +36,8 @@ func (i *Item) Time() time.Time {
 	return time.Now()
 }
 
-// ClientService is the interface that all client stores must implement.
-type ClientService interface {
+// ServerService is the interface that all server stores must implement.
+type ServerService interface {
 	Set(key, json string) error
 	Inc(key, field string) error
 	Get(key string) (string, error)

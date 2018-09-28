@@ -145,14 +145,30 @@ func CmdStart() error {
 					conn.WriteError("ERR wrong number of arguments for '" + string(cmd.Args[0]) + "' command")
 					return
 				}
-				// mu.Lock()
-				// items[string(cmd.Args[1])] = cmd.Args[2]
-				// mu.Unlock()
-				// conn.WriteString("OK")
-				name := string(cmd.Args[1])
+
+				pathSpec := string(cmd.Args[1])
 				json := string(cmd.Args[2])
+
 				// ToDo: validate both name and json.
-				err := db.Set(name, json)
+
+				err := db.Set(pathSpec, json)
+				if err != nil {
+					conn.WriteError("FATAL Internal Error : " + err.Error())
+					return
+				}
+				conn.WriteString("OK")
+			case "inc":
+				if len(cmd.Args) != 3 {
+					conn.WriteError("ERR wrong number of arguments for '" + string(cmd.Args[0]) + "' command")
+					return
+				}
+
+				pathSpec := string(cmd.Args[1])
+				fieldName := string(cmd.Args[2])
+
+				// ToDo: validate both name and json.
+
+				err := db.Inc(pathSpec, fieldName)
 				if err != nil {
 					conn.WriteError("FATAL Internal Error : " + err.Error())
 					return

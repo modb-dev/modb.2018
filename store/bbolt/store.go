@@ -1,4 +1,4 @@
-package bolt
+package bbolt
 
 import (
 	"github.com/chilts/sid"
@@ -12,7 +12,7 @@ var itemBucketName = []byte("item")
 
 type store struct{ db *bbolt.DB }
 
-func Open(dirname string) (modb.ClientService, error) {
+func Open(dirname string) (modb.ServerService, error) {
 	var err error
 
 	db, err := bbolt.Open(dirname, 0666, nil)
@@ -66,8 +66,8 @@ func (s *store) Keys() ([]string, error) {
 
 // Sets the item to the json data provided.
 func (s *store) Set(name, json string) error {
-	key := sid.Id() + ":" + name
-	val := "set:" + json
+	key := sid.Id()
+	val := name + ":set:" + json
 
 	return s.db.Update(func(tx *bbolt.Tx) error {
 		log := tx.Bucket(logBucketName)
@@ -82,8 +82,8 @@ func (s *store) Inc(name, field string) error {
 		return err
 	}
 
-	key := sid.Id() + ":" + name
-	val := "inc:" + json
+	key := sid.Id()
+	val := name + ":inc:" + json
 
 	return s.db.Update(func(tx *bbolt.Tx) error {
 		b := tx.Bucket(logBucketName)

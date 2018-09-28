@@ -13,7 +13,7 @@ start-help:
 	go run cmd/modb/*.go start --help
 
 test:
-	go test github.com/modb-io/modb/store
+	go test -v github.com/modb-io/modb/store
 
 build:
 	go build cmd/modb/modb.go
