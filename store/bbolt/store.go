@@ -12,6 +12,8 @@ import (
 var logBucketName = []byte("log")
 var itemBucketName = []byte("item")
 
+type store struct{ db *bbolt.DB }
+
 func Open(dirname string) (modb.ClientService, error) {
 	var err error
 
@@ -41,16 +43,14 @@ func Open(dirname string) (modb.ClientService, error) {
 		return nil, err
 	}
 
-	return &blt{db}, nil
+	return &store{db}, nil
 }
 
-type blt struct{ db *bbolt.DB }
-
 // Returns all of the keys in the current `itemBucketName`.
-func (b *blt) Keys() ([]string, error) {
+func (s *store) Keys() ([]string, error) {
 	keys := make([]string, 0)
 
-	err := b.db.View(func(tx *bbolt.Tx) error {
+	err := s.db.View(func(tx *bbolt.Tx) error {
 		bucket := tx.Bucket(itemBucketName)
 		cursor := bucket.Cursor()
 
@@ -63,21 +63,21 @@ func (b *blt) Keys() ([]string, error) {
 }
 
 // Sets the item to the json data provided.
-func (b *blt) Set(name, json string) error {
+func (s *store) Set(name, json string) error {
 	key := sid.Id() + ":" + name
 	val := "set:" + json
 
 	fmt.Printf("key=%s\n", key)
 	fmt.Printf("val=%s\n", val)
 
-	return b.db.Update(func(tx *bbolt.Tx) error {
+	return s.db.Update(func(tx *bbolt.Tx) error {
 		log := tx.Bucket(logBucketName)
 		return log.Put([]byte(key), []byte(val))
 	})
 }
 
 // Increments a field of this item by 1.
-func (b *blt) Inc(name, field string) error {
+func (s *store) Inc(name, field string) error {
 	json, err := sjson.Set("{}", field, 1)
 	if err != nil {
 		return err
@@ -86,22 +86,22 @@ func (b *blt) Inc(name, field string) error {
 	key := sid.Id() + ":" + name
 	val := "inc:" + json
 
-	return b.db.Update(func(tx *bbolt.Tx) error {
+	return s.db.Update(func(tx *bbolt.Tx) error {
 		b := tx.Bucket(logBucketName)
 		return b.Put([]byte(key), []byte(val))
 	})
 }
 
 // Always returns valid JSON for the key, even if the key doesn't exist. ie. an empty key would be returned as '{}'.
-func (b *blt) Get(key string) (string, error) {
+func (s *store) Get(key string) (string, error) {
 	var v string
-	err := b.db.View(func(tx *bbolt.Tx) error {
+	err := s.db.View(func(tx *bbolt.Tx) error {
 		v = string(tx.Bucket(itemBucketName).Get([]byte(key)))
 		return nil
 	})
 	return v, err
 }
 
-func (b *blt) Close() error {
-	return b.db.Close()
+func (s *store) Close() error {
+	return s.db.Close()
 }

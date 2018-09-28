@@ -12,6 +12,7 @@ import (
 	"github.com/tidwall/redcon"
 
 	// https://github.com/golang/go/issues/26645#issuecomment-408572701
+	badger "github.com/chilts/modb/store/badger"
 	bbolt "github.com/chilts/modb/store/bbolt"
 )
 
@@ -110,6 +111,14 @@ func CmdStart() error {
 		return err
 	}
 	defer db.Close()
+
+	// create ClientService
+	db1, err := badger.Open("/tmp/badger")
+	if err != nil {
+		fmt.Printf("Error opening path: %s\n", err.Error())
+		return err
+	}
+	defer db1.Close()
 
 	var mu sync.RWMutex
 	var items = make(map[string][]byte)
