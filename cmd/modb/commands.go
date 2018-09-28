@@ -12,8 +12,8 @@ import (
 	"github.com/tidwall/redcon"
 
 	// https://github.com/golang/go/issues/26645#issuecomment-408572701
-	badger "github.com/chilts/modb/store/badger"
-	bbolt "github.com/chilts/modb/store/bbolt"
+	badger "github.com/modb-io/modb/store/badger"
+	bbolt "github.com/modb-io/modb/store/bbolt"
 )
 
 func CmdHelp() error {

@@ -1,10 +1,8 @@
 package bolt
 
 import (
-	"fmt"
-
-	modb "github.com/chilts/modb"
 	"github.com/chilts/sid"
+	modb "github.com/modb-io/modb"
 	"github.com/tidwall/sjson"
 	bbolt "go.etcd.io/bbolt"
 )
@@ -59,16 +57,17 @@ func (s *store) Keys() ([]string, error) {
 		}
 		return nil
 	})
-	return keys, err
+	if err != nil {
+		return nil, err
+	}
+
+	return keys, nil
 }
 
 // Sets the item to the json data provided.
 func (s *store) Set(name, json string) error {
 	key := sid.Id() + ":" + name
 	val := "set:" + json
-
-	fmt.Printf("key=%s\n", key)
-	fmt.Printf("val=%s\n", val)
 
 	return s.db.Update(func(tx *bbolt.Tx) error {
 		log := tx.Bucket(logBucketName)
