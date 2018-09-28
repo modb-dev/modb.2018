@@ -3,6 +3,8 @@ github.com/AndreasBriese/bbloom v0.0.0-20180913140656-343706a395b7/go.mod h1:bOv
 github.com/chilts/modb v0.0.0-20130911094948-17748e7f7128 h1:qXE5knEAccuxb5WBTIjDkQbRIufpQWJB7vgLhMhG0SA=
 github.com/chilts/sid v0.0.0-20180927000856-76cee361c7a9 h1:NF1uUiL4nRQbu1mjFll7H1Hp3WcL2e+gvbdXjA4+Stc=
 github.com/chilts/sid v0.0.0-20180927000856-76cee361c7a9/go.mod h1:kxfWM/bJqzYYYVVaPjV3BwVhmczj6UN60b4qD5BobDI=
+github.com/chilts/sid v0.0.0-20180928232130-250d10e55bf4 h1:PfSw6tpd+EJTEhprqveK3ZzFBf7BT0ZHoACFeligUtM=
+github.com/chilts/sid v0.0.0-20180928232130-250d10e55bf4/go.mod h1:kxfWM/bJqzYYYVVaPjV3BwVhmczj6UN60b4qD5BobDI=
 github.com/dgraph-io/badger v1.5.4 h1:gVTrpUTbbr/T24uvoCaqY2KSHfNLVGm0w+hbee2HMeg=
 github.com/dgraph-io/badger v1.5.4/go.mod h1:VZxzAIRPHRVNRKRo6AXrX9BJegn6il06VMTZVJYCIjQ=
 github.com/dgryski/go-farm v0.0.0-20180109070241-2de33835d102 h1:afESQBXJEnj3fu+34X//E8Wg3nEbMJxJkwSc0tPePK0=

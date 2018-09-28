@@ -2,7 +2,7 @@ module github.com/modb-io/modb
 
 require (
 	github.com/AndreasBriese/bbloom v0.0.0-20180913140656-343706a395b7 // indirect
-	github.com/chilts/sid v0.0.0-20180927000856-76cee361c7a9
+	github.com/chilts/sid v0.0.0-20180928232130-250d10e55bf4
 	github.com/dgraph-io/badger v1.5.4
 	github.com/dgryski/go-farm v0.0.0-20180109070241-2de33835d102 // indirect
 	github.com/golang/protobuf v1.2.0 // indirect
