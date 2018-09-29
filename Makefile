@@ -21,5 +21,8 @@ build:
 client:
 	redis-cli -p 6380
 
+dump:
+	boltdb-dump mo.db
+
 clean:
 	rm modb
