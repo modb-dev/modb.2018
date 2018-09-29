@@ -41,7 +41,7 @@ type ServerService interface {
 	Set(key, json string) error
 	Inc(key, field string) error
 	Get(key string) (string, error)
-	Keys() ([]string, error)
+	Keys(tablename string) ([]string, error)
 	Close() error
 }
 

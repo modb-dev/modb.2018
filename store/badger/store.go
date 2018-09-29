@@ -24,7 +24,7 @@ func Open(dirname string) (modb.ServerService, error) {
 	return nil, nil
 }
 
-func (s *store) Keys() ([]string, error) {
+func (s *store) Keys(tablename string) ([]string, error) {
 	keys := make([]string, 0)
 
 	err := s.db.View(func(txn *badger.Txn) error {
@@ -44,34 +44,34 @@ func (s *store) Keys() ([]string, error) {
 	return keys, nil
 }
 
-func (s *store) Set(name, json string) error {
-	key := "_log:" + sid.Id()
-	val := name + ":set:" + json
+func (s *store) Set(pathSpec, json string) error {
+	key := pathSpec + ":" + sid.Id()
+	val := "set:" + json
 
 	return s.db.Update(func(txn *badger.Txn) error {
 		return txn.Set([]byte(key), []byte(val))
 	})
 }
 
-func (s *store) Inc(name, field string) error {
+func (s *store) Inc(pathSpec, field string) error {
 	json, err := sjson.Set("{}", field, 1)
 	if err != nil {
 		return err
 	}
 
-	key := "_log:" + sid.Id()
-	val := name + ":inc:" + json
+	key := pathSpec + ":" + sid.Id()
+	val := "inc:" + json
 
 	return s.db.Update(func(txn *badger.Txn) error {
 		return txn.Set([]byte(key), []byte(val))
 	})
 }
 
-func (s *store) Get(key string) (string, error) {
+func (s *store) Get(pathSpec string) (string, error) {
 	var v string
 
 	err := s.db.View(func(txn *badger.Txn) error {
-		item, err := txn.Get([]byte(key))
+		item, err := txn.Get([]byte(pathSpec))
 		if err != nil {
 			return err
 		}

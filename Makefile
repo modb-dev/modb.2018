@@ -25,4 +25,4 @@ dump:
 	boltdb-dump mo.db
 
 clean:
-	rm modb
+	rm -rf mo.db

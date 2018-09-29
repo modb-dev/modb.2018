@@ -175,11 +175,19 @@ func CmdStart() error {
 				}
 				conn.WriteString("OK")
 			case "keys":
-				keys, err := db.Keys()
+				if len(cmd.Args) != 2 {
+					conn.WriteError("ERR wrong number of arguments for '" + string(cmd.Args[0]) + "' command")
+					return
+				}
+
+				tableName := string(cmd.Args[1])
+
+				keys, err := db.Keys(tableName)
 				if err != nil {
 					conn.WriteError("FATAL Internal Error : " + err.Error())
 					return
 				}
+
 				conn.WriteArray(len(keys))
 				for _, val := range keys {
 					conn.WriteBulkString(val)
@@ -189,14 +197,21 @@ func CmdStart() error {
 					conn.WriteError("ERR wrong number of arguments for '" + string(cmd.Args[0]) + "' command")
 					return
 				}
-				mu.RLock()
-				val, ok := items[string(cmd.Args[1])]
-				mu.RUnlock()
-				if !ok {
-					conn.WriteNull()
-				} else {
-					conn.WriteBulk(val)
+
+				pathSpec := string(cmd.Args[1])
+
+				val, err := db.Get(pathSpec)
+				if err != nil {
+					conn.WriteError("FATAL Internal Error : " + err.Error())
+					return
 				}
+
+				if val == "" {
+					conn.WriteNull()
+					return
+				}
+
+				conn.WriteString(val)
 			case "del":
 				if len(cmd.Args) != 2 {
 					conn.WriteError("ERR wrong number of arguments for '" + string(cmd.Args[0]) + "' command")

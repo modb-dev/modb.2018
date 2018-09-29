@@ -1,14 +1,14 @@
 package bbolt
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/chilts/sid"
 	modb "github.com/modb-io/modb"
 	"github.com/tidwall/sjson"
 	bbolt "go.etcd.io/bbolt"
 )
-
-var logBucketName = []byte("log")
-var itemBucketName = []byte("item")
 
 type store struct{ db *bbolt.DB }
 
@@ -20,39 +20,22 @@ func Open(dirname string) (modb.ServerService, error) {
 		return nil, err
 	}
 
-	// db.tx.Bucket(logBucketName)
-
-	err = db.Update(func(tx *bbolt.Tx) error {
-		var err error
-
-		_, err = tx.CreateBucketIfNotExists(logBucketName)
-		if err != nil {
-			return err
-		}
-
-		_, err = tx.CreateBucketIfNotExists(itemBucketName)
-		if err != nil {
-			return err
-		}
-
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-
 	return &store{db}, nil
 }
 
-// Returns all of the keys in the current `itemBucketName`.
-func (s *store) Keys() ([]string, error) {
+// Returns all of the keys in the current `tablename`.
+func (s *store) Keys(tablename string) ([]string, error) {
 	keys := make([]string, 0)
 
 	err := s.db.View(func(tx *bbolt.Tx) error {
-		bucket := tx.Bucket(itemBucketName)
-		cursor := bucket.Cursor()
+		b := tx.Bucket([]byte(tablename))
+		if b == nil {
+			return nil
+		}
 
-		for k, _ := cursor.First(); k != nil; k, _ = cursor.Next() {
+		c := b.Cursor()
+
+		for k, _ := c.First(); k != nil; k, _ = c.Next() {
 			keys = append(keys, string(k))
 		}
 		return nil
@@ -65,39 +48,64 @@ func (s *store) Keys() ([]string, error) {
 }
 
 // Sets the item to the json data provided.
-func (s *store) Set(name, json string) error {
-	key := sid.Id()
-	val := name + ":set:" + json
+func (s *store) Set(path, json string) error {
+	parts := strings.SplitN(path, "/", 2)
+	tablename := parts[0]
+	key := parts[1] + ":" + sid.Id()
+	val := "set:" + json
 
 	return s.db.Update(func(tx *bbolt.Tx) error {
-		log := tx.Bucket(logBucketName)
-		return log.Put([]byte(key), []byte(val))
+		b, err := tx.CreateBucketIfNotExists([]byte(tablename))
+		if err != nil {
+			return err
+		}
+		return b.Put([]byte(key), []byte(val))
 	})
 }
 
 // Increments a field of this item by 1.
-func (s *store) Inc(name, field string) error {
+func (s *store) Inc(path, field string) error {
 	json, err := sjson.Set("{}", field, 1)
 	if err != nil {
 		return err
 	}
 
-	key := sid.Id()
-	val := name + ":inc:" + json
+	// path is 'tablename/itemname'
+	parts := strings.SplitN(path, "/", 2)
+	tablename := parts[0]
+	key := parts[1] + ":" + sid.Id()
+	val := "inc:" + json
 
 	return s.db.Update(func(tx *bbolt.Tx) error {
-		b := tx.Bucket(logBucketName)
+		b, err := tx.CreateBucketIfNotExists([]byte(tablename))
+		if err != nil {
+			return err
+		}
 		return b.Put([]byte(key), []byte(val))
 	})
 }
 
 // Always returns valid JSON for the key, even if the key doesn't exist. ie. an empty key would be returned as '{}'.
-func (s *store) Get(key string) (string, error) {
+func (s *store) Get(path string) (string, error) {
 	var v string
+	fmt.Printf("Get() : v=[%s]\n", v)
+
+	// path is 'tablename/itemname'
+	parts := strings.SplitN(path, "/", 2)
+	tablename := parts[0]
+	key := parts[1]
+
+	fmt.Printf("Get() : tablename=[%s], key=%s\n", tablename, key)
+
 	err := s.db.View(func(tx *bbolt.Tx) error {
-		v = string(tx.Bucket(itemBucketName).Get([]byte(key)))
+		b := tx.Bucket([]byte(tablename))
+		if b == nil {
+			return nil
+		}
+		v = string(b.Get([]byte(key)))
 		return nil
 	})
+
 	return v, err
 }
 
